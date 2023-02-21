@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-service  # Can call it anything
+  namespace: demo-ns           # Define a specific namespace
+  labels:
+    app: service-label-nodeport
+spec:
+  type: ClusterIP
+  selector:
+    app: demo-pod-app-deployment
+    version: demo-nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

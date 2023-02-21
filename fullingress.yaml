@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  namespace: demo
+spec:
+  selector:
+    matchLabels:
+      app: demo
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: demo
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+        lifecycle:
+          postStart:
+            exec:
+              command: ["/bin/sh", "-c", "echo Hello nginx1 > /usr/share/nginx/html/index.html"]
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo
+  namespace: demo
+  labels:
+    app: demo
+spec:
+  ports:
+  - name: http-demo
+    port: 80
+    protocol: TCP
+  selector:
+    app: demo
+
+
+---
+
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: demo-gw
+  namespace: demo
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      name: http
+      number: 80
+      protocol: HTTP
+    hosts:
+    - "example.com"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: demo-vs
+  namespace: demo
+spec:
+  gateways:
+  - demo-gw
+  hosts:
+  - "example.com"
+  http:
+  - match:
+    - uri:
+        prefix: /
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: demo.demo.svc.cluster.local
+        port:
+          number: 80

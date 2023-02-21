@@ -1,0 +1,15 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: demo-service
+  namespace: demo-ns
+spec:
+  host: demo-service-nordport.demp-ns.svc.cluster.local
+  subsets:
+    - name: demo-nginx-grp    # Name of
+      labels:       #  This is the SELECTOR
+        version: demo-nginx          # find pods with label "demo-nginx"
+
+    - name: demp-python-grp
+      labels:
+        version: demo-python         # find pods with label "demo-python"

@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-deployment-app
+  namespace: demo-ns
+  labels:
+    app: demo-deployment-app     # Label assoicated with the pod for refrencing
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: demo-pod-deployment
+      labels:
+        app: demo-pod-app-deployment
+        version: demo-nginx
+    spec:
+      containers:
+      - name: nginx-container
+        image: nginx
+        ports:
+        - containerPort: 80
+        lifecycle:
+          postStart:
+            exec:
+              command: ["/bin/sh", "-c", "echo Hello nginx1 working again > /usr/share/nginx/html/index.html"]
+  selector:
+    matchLabels:
+      app : demo-pod-app-deployment
+      version: demo-nginx

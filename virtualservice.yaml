@@ -1,0 +1,17 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: nginx-app-vs              # Can call this anything. Name for Virtual Service
+  namespace: demo-ns
+spec:
+  hosts:
+  # -  demo-service.demp-ns.svc.cluster.local    #  The service DNS (k8s service ) name we are applying routing rules too. (i.e pods we want to send traffic to)
+  # - showcase-app.namespace.com         # The
+  - "*"                                            # We are putting a wild card
+  gateways:
+    - http-ingress-gateway                     # Name of gateway specfied in the gateway.yaml file
+  http:
+  - route:
+    - destination:
+        host: demo-service.demo-ns.svc.cluster.local   # .demo-ns.svc.cluster.local The service DNS (k8s service ) name we are applying routing rules too (target DNS name)
+        subset: demo-nginx-grp                    # The name defined destination rule
